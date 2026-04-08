@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.MachineSubsystem;
 import frc.robot.Telemetry;
 import frc.robot.constants.TeleopConstants;
 import frc.robot.subsystems.intake.IntakeSimulation;
@@ -36,16 +35,14 @@ public class Autonomous implements Controller {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private MachineSubsystem machineSubsystem;
     private PathPlannerPath path1;
     private PathPlannerPath path2;
-    public Autonomous(Telemetry logger,CommandSwerveDrivetrain drivetrain, MachineSubsystem machineSubsystem) {
+    public Autonomous(Telemetry logger,CommandSwerveDrivetrain drivetrain) {
         this.logger = logger;
         this.drivetrain = drivetrain;
         //this.joystick = new Joystick(0);
         this.shooterSimulation = new ShooterSimulation(this.drivetrain);
         this.intakeSimulation = new IntakeSimulation();
-        this.machineSubsystem = machineSubsystem;
         try {
             initPaths();
         } catch (FileVersionException | IOException | ParseException e) {
@@ -61,12 +58,12 @@ public class Autonomous implements Controller {
 
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
-            AutoBuilder.followPath(path1),
-            intakeSimulation.activateIntakeCommand(),
+            //AutoBuilder.followPath(path1),
+            //intakeSimulation.activateIntakeCommand(),
             new WaitCommand(2),
-            intakeSimulation.intakeBallWithRandomness(20),
-            intakeSimulation.deactivateIntakeCommand(),
-            AutoBuilder.followPath(path2)
+            intakeSimulation.intakeBallWithRandomness(20)
+            //intakeSimulation.deactivateIntakeCommand(),
+            //AutoBuilder.followPath(path2)
         );
     }
 

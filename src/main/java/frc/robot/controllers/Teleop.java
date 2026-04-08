@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.MachineSubsystem;
 import frc.robot.Telemetry;
 import frc.robot.commands.TurnToAngle;
 import frc.robot.constants.TeleopConstants;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSimulation;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -25,32 +25,29 @@ public class Teleop implements Controller {
     private boolean simulationMode = Container.simulationMode;
     private Telemetry logger;
     //private final SlewRateLimiter limiter = new SlewRateLimiter(0.8);
-    private CommandSwerveDrivetrain drivetrain;
+    //private CommandSwerveDrivetrain drivetrain;
+    private IntakeSubsystem intakeSubsystem;
     private CommandXboxController joystick;
-    private ShooterSimulation shooterSimulationTest;
     //private Joystick joystick;
-    private MachineSubsystem machineSubsystem;
-    public Teleop(Telemetry logger,CommandSwerveDrivetrain drivetrain, MachineSubsystem machineSubsystem) {
+    public Teleop(Telemetry logger,IntakeSubsystem intakeSubsystem){//CommandSwerveDrivetrain drivetrain) {
         this.logger = logger;
-        this.drivetrain = drivetrain;
         //this.joystick = new Joystick(0);
+        this.intakeSubsystem = intakeSubsystem;
         this.joystick = new CommandXboxController(0);
-        this.machineSubsystem = machineSubsystem;
-        this.shooterSimulationTest = new ShooterSimulation(drivetrain);
     }
     @Override
     public void getInitializeFunction() {
         configureBindings();
     }
     public void configureBindings() {
-        if (simulationMode) {
+        if (!simulationMode) {
             // Note that X is defined as forward according to WPILib convention,
             // and Y is defined as to the left according to WPILib convention.
-            if (driveEnabled) {
+            /*if (driveEnabled) {
                 drivetrain.setDefaultCommand(
                     drivetrain.teleopDriveCommand(joystick)
                 );
-            }
+            }*/
             /*if (driveEnabled) {
                 drivetrain.setDefaultCommand(
                     drivetrain.applyRequest(() ->
@@ -62,10 +59,10 @@ public class Teleop implements Controller {
             }*/
             // Idle while the robot is disabled. This ensures the conf  igured
             // neutral mode is applied to the drive motors while disabled.
-            final var idle = new SwerveRequest.Idle();
+            /*final var idle = new SwerveRequest.Idle();
             RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-            );
+            );*/
 
             //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
             //joystick.b().whileTrue(new TurnToAngle(180, drivetrain, drive,MaxAngularRate));
@@ -86,8 +83,10 @@ public class Teleop implements Controller {
             // Reset the field-centric heading on left bumper press.
             //joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
             //joystick.leftBumper().onTrue(new InstantCommand(()->{shooterSimulation.launchFuel();}));
+            joystick.a().onTrue(intakeSubsystem.startIdle());
+            
         }
-        drivetrain.registerTelemetry(logger::telemeterize);
+        //drivetrain.registerTelemetry(logger::telemeterize);
     }
     /*public Joystick getJoystick() {
         return joystick;

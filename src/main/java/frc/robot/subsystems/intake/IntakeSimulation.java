@@ -5,12 +5,13 @@ import java.util.Random;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.IntakeConstants;
+import frc.robot.constants.IntakeConstants.PivotStates;
 import frc.robot.utils.Container;
 
 public class IntakeSimulation extends Intake {
     private boolean isActive = false;
     private double goalRPM = 0;
-    private double pivotAngle = 0;
+    private IntakeConstants.PivotStates pivotState = PivotStates.CLOSED;
     public IntakeSimulation() {}
     
     public void intakeBall(double amout) {Container.fuelCount = Container.fuelCount + amout;}
@@ -78,30 +79,18 @@ public class IntakeSimulation extends Intake {
         return true;
     }
 
-    @Override
+     @Override
     public Command openIntake() {
-        return new InstantCommand(
-            () -> {
-                pivotAngle = IntakeConstants.pivotOpenPosition;
-            }
-        );
+        return new InstantCommand(() -> pivotState = PivotStates.OPEN);
     }
-
+ 
     @Override
     public Command closeIntake() {
-        return new InstantCommand(
-            () -> {
-                pivotAngle = IntakeConstants.pivotClosePosition;
-            }
-        );
+        return new InstantCommand(() -> pivotState = PivotStates.CLOSED);
     }
-
+ 
     @Override
     public Command semiIntake() {
-        return new InstantCommand(
-            () -> {
-                pivotAngle = IntakeConstants.pivotSemiPosition;
-            }
-        );
+        return new InstantCommand(() -> pivotState = PivotStates.SEMI);
     }
 }

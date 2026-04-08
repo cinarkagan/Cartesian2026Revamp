@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -30,6 +31,8 @@ import frc.robot.constants.TeleopConstants;
 import frc.robot.controllers.Autonomous;
 import frc.robot.controllers.Teleop;
 import frc.robot.controllers.Teleop;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -41,24 +44,24 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(TeleopConstants.MaxSpeed);
 
     //private final CommandXboxController joystick = new CommandXboxController(0);
-    public final CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain();
-
-    public final MachineSubsystem machineSubsystem = new MachineSubsystem(drivetrain);
-    public Teleop teleopController = new Teleop(logger, drivetrain, machineSubsystem);
-    public Autonomous autonomousController = new Autonomous(logger, drivetrain, machineSubsystem);
+    //public final CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain();
+    public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    public Teleop teleopController = new Teleop(logger, intakeSubsystem);
+    //public Autonomous autonomousController = new Autonomous(logger, drivetrain, machineSubsystem);
     public RobotContainer() {
         teleopController.getInitializeFunction();
         configureFuelSim();
     }
 
     public Command getAutonomousCommand() {
-        return autonomousController.getAutonomousCommand();
+        //return autonomousController.getAutonomousCommand();
+        return new InstantCommand();
     }
     public void simulationPeriodic() {
         teleopController.simulationPeriodic();
     }
     private void configureFuelSim() {
-        FuelSim instance = FuelSim.getInstance();
+        /*FuelSim instance = FuelSim.getInstance();
         instance.spawnStartingFuel();
         instance.registerRobot(
                 (0.6),
@@ -74,7 +77,7 @@ public class RobotContainer {
                 (0.4),
                 () -> true,
                 Container::increaseFuel);
-                simdilik bu olmayacak*/
+                simdilik bu olmayacak
 
         instance.start();
         SmartDashboard.putData(Commands.runOnce(() -> {
@@ -84,7 +87,7 @@ public class RobotContainer {
                 .withName("Reset Fuel")
                 .ignoringDisable(true));
                 
-        FuelSim.getInstance().start(); 
+        FuelSim.getInstance().start(); */
     }
 
 }
