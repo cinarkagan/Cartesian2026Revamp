@@ -31,6 +31,7 @@ import frc.robot.constants.TeleopConstants;
 import frc.robot.controllers.Autonomous;
 import frc.robot.controllers.Teleop;
 import frc.robot.controllers.Teleop;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -46,7 +47,9 @@ public class RobotContainer {
     //private final CommandXboxController joystick = new CommandXboxController(0);
     //public final CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    public Teleop teleopController = new Teleop(logger, intakeSubsystem);
+    public final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    public final FeederSubsystem feederSubsystem = new FeederSubsystem();
+    public Teleop teleopController = new Teleop(logger, intakeSubsystem, shooterSubsystem, feederSubsystem);
     //public Autonomous autonomousController = new Autonomous(logger, drivetrain, machineSubsystem);
     public RobotContainer() {
         teleopController.getInitializeFunction();

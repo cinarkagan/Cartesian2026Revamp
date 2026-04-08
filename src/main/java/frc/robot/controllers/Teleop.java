@@ -8,31 +8,39 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Telemetry;
 import frc.robot.commands.TurnToAngle;
 import frc.robot.constants.TeleopConstants;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSimulation;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.AllStates;
 import frc.robot.utils.Container;
+import frc.robot.utils.AllStates.ShooterStates;
 
 public class Teleop implements Controller {
     private boolean driveEnabled = Container.driveEnabled;
     private boolean simulationMode = Container.simulationMode;
     private Telemetry logger;
+    private boolean intakeTest = true;
     //private final SlewRateLimiter limiter = new SlewRateLimiter(0.8);
     //private CommandSwerveDrivetrain drivetrain;
     private IntakeSubsystem intakeSubsystem;
     private CommandXboxController joystick;
+    private ShooterSubsystem shooterSubsystem;
+    private FeederSubsystem feederSubsystem;
     //private Joystick joystick;
-    public Teleop(Telemetry logger,IntakeSubsystem intakeSubsystem){//CommandSwerveDrivetrain drivetrain) {
+    public Teleop(Telemetry logger,IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem){//CommandSwerveDrivetrain drivetrain) {
         this.logger = logger;
         //this.joystick = new Joystick(0);
         this.intakeSubsystem = intakeSubsystem;
+        this.shooterSubsystem = shooterSubsystem;
+        this.feederSubsystem = feederSubsystem;
         this.joystick = new CommandXboxController(0);
     }
     @Override
@@ -83,8 +91,16 @@ public class Teleop implements Controller {
             // Reset the field-centric heading on left bumper press.
             //joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
             //joystick.leftBumper().onTrue(new InstantCommand(()->{shooterSimulation.launchFuel();}));
-            joystick.a().onTrue(intakeSubsystem.startIdle());
-            
+            if (intakeTest) {
+                joystick.a().onTrue(intakeSubsystem.startIdle());
+                joystick.b().onTrue(intakeSubsystem.stop());
+                joystick.leftBumper().onTrue(intakeSubsystem.openIntake());
+                joystick.rightBumper().onTrue(intakeSubsystem.closeIntake());
+            } else {
+                joystick.a().onTrue(new ParallelCommandGroup(shooterSubsystem.idle(),feederSubsystem.startIdle()));
+                joystick.b().onTrue(new ParallelCommandGroup(shooterSubsystem.startShoot(),feederSubsystem.startFeeding()));
+                joystick.leftBumper().onTrue(new ParallelCommandGroup(shooterSubsystem.stop(),feederSubsystem.stop()));
+            }
         }
         //drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -94,3 +110,17 @@ public class Teleop implements Controller {
     public void simulationPeriodic() {}
     public void periodic() {}
 }
+/*
+ * INTAKE TEST:
+ * a - start roller
+ * b - stop roller
+ * leftBumper - open pivot
+ * rightBumper - close pivot
+ * 
+ * 
+ * 
+ * SHOOTER & FEEDER TEST:
+ * a - Idle RPM
+ * b - Shoot
+ * leftBumper - Stop
+ */

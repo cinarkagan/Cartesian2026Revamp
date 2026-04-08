@@ -172,7 +172,7 @@ public class IntakeSubsystem extends Intake {
  
     @Override
     public Command closeIntake() {
-        return new InstantCommand(() -> pivotState = PivotStates.CLOSED);
+        return new InstantCommand(() -> {pivotState = PivotStates.CLOSED; goalRPM = 0;});
     }
  
     @Override

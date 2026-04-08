@@ -24,6 +24,7 @@ public class ShooterConstants {
     public static double IDLE_RPM_MAX = 1700;
     public static double IDLE_RPM_MIN = 800;
 
+    public static double SHOOT_RPM = 1000;
 
     public static double LOW_POWER_RPM = 500;
     public static double REVERSE_RPM = -IDLE_RPM;
@@ -38,5 +39,8 @@ public class ShooterConstants {
     public static double kP = 0.011;
     public static double kI = 0;
     public static double kD = 0;
+
+    //Shoot Poses
+    public static double autoShootRPM = 1000;
 
 }

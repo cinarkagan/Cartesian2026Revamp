@@ -12,9 +12,9 @@ public class LocationConstants {
     public static final Pose2d START_POSE_RED_LEFT = new Pose2d(12.14, 0.425, new Rotation2d(Math.toRadians(180)));
 
 
-    public static final Pose2d START_POSE_BLUE_RIGHT = new Pose2d(4.405, 0.425, new Rotation2d(Math.toRadians(0)));
-    public static final Pose2d START_POSE_BLUE_MIDDLE = new Pose2d(3.6, 4.025, new Rotation2d(Math.toRadians(0)));
-    public static final Pose2d START_POSE_BLUE_LEFT = new Pose2d(4.405, 7.625, new Rotation2d(Math.toRadians(0)));
+    public static final Pose2d START_POSE_BLUE_RIGHT = new Pose2d(0.660, 7.402, new Rotation2d(Math.toRadians(0)));
+    public static final Pose2d START_POSE_BLUE_MIDDLE = new Pose2d(3.6, 4.025, new Rotation2d(Math.toRadians(0))); //update
+    public static final Pose2d START_POSE_BLUE_LEFT = new Pose2d(4.405, 7.625, new Rotation2d(Math.toRadians(0))); //update
 
 
     public static final Pose2d RED_WALL_INTAKE_POSE = new Pose2d(15.1, 2.9, new Rotation2d(Math.toRadians(-31)));
@@ -34,6 +34,8 @@ public class LocationConstants {
 
     public static final Pose2d RED_PASS_1 = new Pose2d(15.5, 6, new Rotation2d());
     public static final Pose2d RED_PASS_2 = new Pose2d(15.5,2, new Rotation2d());
+
+    public static final Pose2d AUTO_SHOOT_POSE = new Pose2d(2.610,4,new Rotation2d(Math.toRadians(180)));
 
     //TODO: Belirle
     public static final double MIN_SHOOT_Y = 0;

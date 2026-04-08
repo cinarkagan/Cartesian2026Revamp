@@ -43,12 +43,12 @@ public class ShooterSubsystem extends Shooter {
     public double goalRPM = ShooterConstants.IDLE_RPM;
 
 
-    private final ShooterCalculator shooterCalc;
+    //private final ShooterCalculator shooterCalc;
 
     //TODO: PID Configleri constantsa çek(claude yapar)
 
-    public ShooterSubsystem(CommandSwerveDrivetrain commandSwerveDrivetrain) {
-        shooterCalc = new ShooterCalculator(commandSwerveDrivetrain);
+    public ShooterSubsystem(){//CommandSwerveDrivetrain commandSwerveDrivetrain) {
+        //shooterCalc = new ShooterCalculator(commandSwerveDrivetrain);
 
         // Shooter 1
         configShooter1.inverted(ShooterConstants.shooter1_reversed).idleMode(IdleMode.kBrake);
@@ -158,12 +158,13 @@ public class ShooterSubsystem extends Shooter {
 
     @Override
     public Command startShoot() {
-        return new InstantCommand(() -> {setGoalRPM(shooterCalc.calculateFlywheelShootRPMFromCurrentPose());});
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.SHOOT_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
+        //return new InstantCommand(() -> {setGoalRPM(shooterCalc.calculateFlywheelShootRPMFromCurrentPose());});
     }
 
     @Override
     public Command startIdle() {
-        return new InstantCommand(() -> {setGoalRPM(shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.IDLE_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
     }
 
     @Override
