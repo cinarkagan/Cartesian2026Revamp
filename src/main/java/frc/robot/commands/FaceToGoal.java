@@ -16,12 +16,12 @@ import frc.robot.controllers.Teleop;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 
 /** A command that will turn the robot to the specified angle. */
-public class TurnToAngle extends Command {
+public class FaceToGoal extends Command {
   PIDController controller;
   CommandSwerveDrivetrain drivetrain;
   SwerveRequest.FieldCentric drive;
   double MaxAngularRate;
-  public TurnToAngle(double targetAngleDegrees, CommandSwerveDrivetrain drivetrain) {
+  public FaceToGoal( CommandSwerveDrivetrain drivetrain) {
     /*super(
         new PIDController(DriveConstants.turnP, DriveConstants.turnI, DriveConstants.turnD),
         drivetrain::getHeading,
@@ -42,6 +42,7 @@ public class TurnToAngle extends Command {
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
     controller.setTolerance(Math.toRadians(DriveConstants.turnToleranceDeg), Math.toRadians(DriveConstants.turnToleranceDegPerSec));
+    double targetAngleDegrees = drivetrain.getThetaToHub();
     controller.setSetpoint(Math.toRadians(targetAngleDegrees));
 
     

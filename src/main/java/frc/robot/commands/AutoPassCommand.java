@@ -5,19 +5,19 @@ import frc.robot.constants.ShooterConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
-public class AutoShootCommand extends Command{
+public class AutoPassCommand extends Command{
     private final ShooterSubsystem m_shooter;
     private final FeederSubsystem m_feeder;
 
     long feedStartTime = 0;
-    public AutoShootCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder) {
+    public AutoPassCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder) {
         this.m_shooter = m_shooter;
         this.m_feeder = m_feeder;
     }
 
     @Override
     public void initialize() {
-        m_shooter.startShoot();
+        m_shooter.startPass();
     }
 
     @Override

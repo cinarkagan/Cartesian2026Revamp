@@ -11,6 +11,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -84,7 +85,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     
         private double distanceToHub;
         private double xDistanceToHub;
-    
+        private double yDistanceToHub;
+
         /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
         private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -296,13 +298,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 distanceToHub = (LocationConstants.RED_HUB_AIM_POSE.getTranslation().getDistance(getPose().getTranslation()));
                 xDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getX() - getPose().getTranslation().getX()));
+                yDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getY() - getPose().getTranslation().getY()));
             } else {
                 distanceToHub = (LocationConstants.BLUE_HUB_AIM_POSE.getTranslation().getDistance(getPose().getTranslation()));
                 xDistanceToHub = (Math.abs(LocationConstants.BLUE_HUB_AIM_POSE.getTranslation().getX() - getPose().getTranslation().getX()));
+                yDistanceToHub = (Math.abs(LocationConstants.BLUE_HUB_AIM_POSE.getTranslation().getY() - getPose().getTranslation().getY()));
             }
             } else {
                 distanceToHub = (LocationConstants.RED_HUB_AIM_POSE.getTranslation().getDistance(getPose().getTranslation()));
                 xDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getX() - getPose().getTranslation().getX()));
+                yDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getY() - getPose().getTranslation().getY()));
             }
     
     
@@ -314,6 +319,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         public double getXDistanceToHub() {
             return xDistanceToHub;
+        }
+        public double getYDistanceToHub() {
+            return xDistanceToHub;
+        }
+        public double getTangentToHub() {
+            return yDistanceToHub/xDistanceToHub;
+        }
+        public double getThetaToHub() {
+            return Math.atan2(xDistanceToHub, yDistanceToHub);
         }
     
         public Pose2d getPose() {
@@ -514,4 +528,5 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             .withRotationalRate(-joystick.getRightX() * TeleopConstants.MaxAngularRate)// Drive counterclockwise with negative X (left)
                     );
     }
+    public SwerveRequest.FieldCentric getDriveRequest() { return driveRequest; }
 }

@@ -108,6 +108,11 @@ public class ShooterSimulation extends Shooter {
     public Command startReverse() {
         return new InstantCommand(() -> {setGoalRPM(0);});
     }
+    
+    @Override
+    public Command startPass() {
+        return new InstantCommand(() -> {setGoalRPM(0);});
+    }
 
     @Override
     public Command stop() {

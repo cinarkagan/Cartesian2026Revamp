@@ -230,6 +230,12 @@ public class ShooterSubsystem extends Shooter {
     }
 
     @Override
+    public Command startPass() {
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.SHOOT_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
+        //return new InstantCommand(() -> {setGoalRPM(shooterCalc.calculateFlywheelPassRPMFromCurrentPose());});
+    }
+
+    @Override
     public Command startIdle() {
         return new InstantCommand(() -> {setGoalRPM(ShooterConstants.IDLE_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
     }
@@ -242,5 +248,28 @@ public class ShooterSubsystem extends Shooter {
     @Override
     public Command stop() {
         return new InstantCommand(() -> {setGoalRPM(0);});
+    }
+
+    public void startShootMethod() {
+        setGoalRPM(ShooterConstants.SHOOT_RPM);
+        //setGoalRPM(shooterCalc.calculateFlywheelShootRPMFromCurrentPose()));
+    }
+
+    public void startPassMethod() {
+        setGoalRPM(ShooterConstants.SHOOT_RPM);
+        //setGoalRPM(shooterCalc.calculateFlywheelPassRPMFromCurrentPose());
+    }
+
+    public void startIdleMethod() {
+        setGoalRPM(ShooterConstants.IDLE_RPM);
+        //setGoalRPM(shooterCalc.calculateRestFlywheelSpeedFromCurrentPose()));
+    }
+
+    public void startReverseMethod() {
+        setGoalRPM(ShooterConstants.REVERSE_RPM);
+    }
+
+    public void stopMethod() {
+        setGoalRPM(0);
     }
 }

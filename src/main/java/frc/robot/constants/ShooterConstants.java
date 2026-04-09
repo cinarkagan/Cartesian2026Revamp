@@ -43,4 +43,5 @@ public class ShooterConstants {
     //Shoot Poses
     public static double autoShootRPM = 100;
 
+    public static double maxShootTime = 5; //seconds & for pass too
 }

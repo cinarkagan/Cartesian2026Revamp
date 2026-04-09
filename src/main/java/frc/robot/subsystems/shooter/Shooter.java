@@ -7,6 +7,7 @@ import frc.robot.utils.AllStates;
 public abstract class Shooter extends SubsystemBase {
     public abstract void setGoalRPM(double rpmGoal);
     public abstract Command startShoot();
+    public abstract Command startPass();
     public abstract Command startIdle();
     public abstract Command startReverse(); 
     public abstract Command stop();

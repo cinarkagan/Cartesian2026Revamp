@@ -60,7 +60,7 @@ public class ShooterCalculator {
         return wheelSpeed;
     }
 
-    public double calculatePassRPMFromCurrentPose()
+    public double calculateFlywheelPassRPMFromCurrentPose()
     {
         double wheelSpeed = pasRPMFormula(commandSwerveDrivetrain.getXDistanceToHub());
 
@@ -84,7 +84,7 @@ public class ShooterCalculator {
             rpm = (frc.robot.constants.ShooterConstants.IDLE_RPM_DIST/commandSwerveDrivetrain.getDistanceToHub())*frc.robot.constants.ShooterConstants.IDLE_RPM;
 
         } else {
-            rpm = (frc.robot.constants.ShooterConstants.IDLE_RPM_DIST_PASS/commandSwerveDrivetrain.getXDistanceToHub())*calculatePassRPMFromCurrentPose();
+            rpm = (frc.robot.constants.ShooterConstants.IDLE_RPM_DIST_PASS/commandSwerveDrivetrain.getXDistanceToHub())*calculateFlywheelPassRPMFromCurrentPose();
         }
 
         rpm = MathUtil.clamp(rpm, ShooterConstants.IDLE_RPM_MIN, ShooterConstants.IDLE_RPM_MAX);

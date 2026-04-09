@@ -46,9 +46,11 @@ public class RobotContainer {
 
     //private final CommandXboxController joystick = new CommandXboxController(0);
     //public final CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain();
+    public CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain(); //init this
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     public final FeederSubsystem feederSubsystem = new FeederSubsystem();
+    public final LocalizationSubsystem localizationSubsystem = new LocalizationSubsystem(drivetrain);
     public Teleop teleopController = new Teleop(logger, intakeSubsystem, shooterSubsystem, feederSubsystem);
     //public Autonomous autonomousController = new Autonomous(logger, drivetrain, machineSubsystem);
     public RobotContainer() {
@@ -57,11 +59,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        //return autonomousController.getAutonomousCommand();
         return new InstantCommand();
     }
     public void simulationPeriodic() {
-        teleopController.simulationPeriodic();
+        //teleopController.simulationPeriodic();
     }
     private void configureFuelSim() {
         /*FuelSim instance = FuelSim.getInstance();
