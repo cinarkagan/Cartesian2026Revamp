@@ -139,7 +139,7 @@ public class ShooterSubsystem extends Shooter {
     }*/
 
     public void rpmControl() {
-        double motorRPM = goalRPM * ShooterConstants.flywheelGearRatio;
+        double motorRPM = ShooterConstants.IDLE_RPM * ShooterConstants.flywheelGearRatio;
 
         // Motor 1
         if (SmartDashboard.getBoolean("Shooter/Shooter1Running", false)) {

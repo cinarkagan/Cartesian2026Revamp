@@ -51,6 +51,7 @@ public class IntakeSubsystem extends Intake {
     TalonFXConfiguration configs_pivot = new TalonFXConfiguration();
 
     public IntakeSubsystem() {
+        SmartDashboard.putBoolean("Pivot Control", false);
         //Intake Motor Setup
         setupConfigs_INTAKE();
         /* Retry config apply up to 5 times, report if failure */
@@ -88,7 +89,7 @@ public class IntakeSubsystem extends Intake {
     }
  
     public void rpmControl() {
-        double motorRPM =  -1 * goalRPM * IntakeConstants.intakeGearRatio;
+        double motorRPM =  -1 * 0 * IntakeConstants.intakeGearRatio;
         m_intake.setControl(m_velocityVoltage.withVelocity(motorRPM/60));
     }
 
@@ -202,9 +203,9 @@ public class IntakeSubsystem extends Intake {
     }
 
     public void setupConfigs_PIVOT() {
-        configs_pivot.Slot0.kP = 3.596; // An error of 1 rotation results in 2.4 V output
-        configs_pivot.Slot0.kI = 0; // No output for integrated error
-        configs_pivot.Slot0.kD = 0.0; // A velocity of 1 rps results in 0.1 V output
+        configs_pivot.Slot0.kP = IntakeConstants.PivotkP; // An error of 1 rotation results in 2.4 V output
+        configs_pivot.Slot0.kI = IntakeConstants.PivotkI; // No output for integrated error
+        configs_pivot.Slot0.kD = IntakeConstants.PivotkD; // A velocity of 1 rps results in 0.1 V output
         configs_pivot.Slot0.kS = 0.04;
         configs_pivot.Slot0.kV = 0.13248;
         configs_pivot.Slot0.kA = 0.002;

@@ -14,6 +14,10 @@ public class IntakeConstants {
     public static double kI = 0;
     public static double kD = 0;
 
+    public static double PivotkP = 0.05; //Tuna Ercan kP: 3.596;
+    public static double PivotkI = 0.0;
+    public static double PivotkD = 0.0;
+
 
     /* Gereksiz
     public static double pivotMotorGearRatio = 1.0 / 5.0;

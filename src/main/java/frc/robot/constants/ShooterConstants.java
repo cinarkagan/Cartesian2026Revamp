@@ -18,7 +18,7 @@ public class ShooterConstants {
     public static int shooter6_ID = 57;
     public static boolean shooter6_reversed = true;
 
-    public static double IDLE_RPM = 200;
+    public static double IDLE_RPM = 200; //bunu değiştirerelk hedef rpmi belirle
     public static double IDLE_RPM_DIST = 4; //in units of meters
     public static double IDLE_RPM_DIST_PASS = 4; //in units of meters
     public static double IDLE_RPM_MAX = 300;
@@ -36,7 +36,7 @@ public class ShooterConstants {
     public static double MIN_FLYWHEEL_SPEED = 100;
     public static double MAX_FLYWHEEL_SPEED = 300;
 
-    public static double kP = 0.001;
+    public static double kP = 0.001; //pid 
     public static double kI = 0;
     public static double kD = 0;
 
