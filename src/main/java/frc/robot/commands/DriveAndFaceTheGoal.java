@@ -15,7 +15,7 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
  * Commands the robot to a specific X, Y coordinate and Heading (Rotation) 
  * simultaneously using three independent PID loops.
  */
-public class DriveToPoseAndTurn extends Command {
+public class DriveAndFaceTheGoal extends Command {
     private final CommandSwerveDrivetrain drivetrain;
     private final SwerveRequest.FieldCentric drive;
     
@@ -26,7 +26,7 @@ public class DriveToPoseAndTurn extends Command {
     private final double maxDriveRate;
     private final double maxAngularRate;
 
-    public DriveToPoseAndTurn(CommandSwerveDrivetrain drivetrain, Pose2d goalPose) {
+    public DriveAndFaceTheGoal(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
         this.maxDriveRate = TeleopConstants.MaxSpeed;
         this.maxAngularRate = TeleopConstants.MaxAngularRate;
@@ -41,11 +41,16 @@ public class DriveToPoseAndTurn extends Command {
         // Configuration
         this.drive = drivetrain.getDriveRequest();
 
+        //Goal Pose Config
+        double goalTheta = drivetrain.getThetaToHub();
+        double goalPoseX = Math.sin(goalTheta);
+        double goalPoseY = Math.cos(goalTheta);
+
         // Setup Translation Tolerances (Meters)
         controllerX.setTolerance(DriveConstants.toleranceXCM / 100.0);
         controllerY.setTolerance(DriveConstants.toleranceYCM / 100.0);
-        controllerX.setSetpoint(goalPose.getX());
-        controllerY.setSetpoint(goalPose.getY());
+        controllerX.setSetpoint(goalPoseX);
+        controllerY.setSetpoint(goalPoseY);
 
         // Setup Rotation Tolerance and Range (Radians)
         // Continuous input allows robot to turn -179 to 179 without spinning 358 degrees
@@ -54,7 +59,7 @@ public class DriveToPoseAndTurn extends Command {
             Math.toRadians(DriveConstants.turnToleranceDeg), 
             Math.toRadians(DriveConstants.turnToleranceDegPerSec)
         );
-        controllerTheta.setSetpoint(goalPose.getRotation().getRadians());
+        controllerTheta.setSetpoint(goalTheta);
 
         addRequirements(drivetrain);
     }

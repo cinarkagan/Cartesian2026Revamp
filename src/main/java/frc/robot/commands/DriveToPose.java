@@ -29,9 +29,7 @@ public class DriveToPose extends Command {
         this.drivetrain = drivetrain;
         this.MaxDriveRate = TeleopConstants.MaxSpeed;
         this.MaxAngularRate = TeleopConstants.MaxAngularRate;
-        this.drive = new SwerveRequest.FieldCentric()
-                .withDeadband(MaxDriveRate*0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        this.drive = drivetrain.getDriveRequest();
         // Set the controller to be continuous (because it is an angle controller)
         //controllerX.enableContinuousInput(-1, 1);
         // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the

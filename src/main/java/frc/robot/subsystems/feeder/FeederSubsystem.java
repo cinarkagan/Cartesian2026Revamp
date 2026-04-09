@@ -108,4 +108,19 @@ public class FeederSubsystem extends Feeder {
     public Command startReverse() {
         return new InstantCommand(() -> {setGoalRPM(FeederConstants.REVERSE_RPM);});
     }
+    public void startFeedingMethod() {
+        setGoalRPM(FeederConstants.FEED_RPM);
+    }
+
+    public void startIdleMethod() {
+        setGoalRPM(FeederConstants.IDLE_RPM);
+    }
+
+    public void startReverseMethod() {
+        setGoalRPM(FeederConstants.REVERSE_RPM);
+    }
+
+    public void stopMethod() {
+        setGoalRPM(0);
+    }
 }

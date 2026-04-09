@@ -17,13 +17,13 @@ public class AutoShootCommand extends Command{
 
     @Override
     public void initialize() {
-        m_shooter.startShoot();
+        m_shooter.startShootMethod();
     }
 
     @Override
     public void execute() {
         if (m_shooter.isAtRPM()) {
-            m_feeder.startFeeding();
+            m_feeder.startFeedingMethod();
             if (feedStartTime == 0) {
                 feedStartTime = System.currentTimeMillis();
             }

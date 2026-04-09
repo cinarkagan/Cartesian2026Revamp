@@ -17,13 +17,13 @@ public class AutoPassCommand extends Command{
 
     @Override
     public void initialize() {
-        m_shooter.startPass();
+        m_shooter.startPassMethod();
     }
 
     @Override
     public void execute() {
         if (m_shooter.isAtRPM()) {
-            m_feeder.startFeeding();
+            m_feeder.startFeedingMethod();
             if (feedStartTime == 0) {
                 feedStartTime = System.currentTimeMillis();
             }
