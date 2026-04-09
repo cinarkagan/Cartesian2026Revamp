@@ -36,7 +36,7 @@ public class ShooterConstants {
     public static double MIN_FLYWHEEL_SPEED = 100;
     public static double MAX_FLYWHEEL_SPEED = 300;
 
-    public static double kP = 0.011;
+    public static double kP = 0.001;
     public static double kI = 0;
     public static double kD = 0;
 

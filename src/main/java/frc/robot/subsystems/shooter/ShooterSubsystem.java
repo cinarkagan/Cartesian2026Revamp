@@ -91,12 +91,20 @@ public class ShooterSubsystem extends Shooter {
         configShooter6.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
         configShooter6.idleMode(IdleMode.kCoast);
         shooter6.configure(configShooter6, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        //Before Telemetry
+        SmartDashboard.putBoolean("ShooterTelemetry", true);
+        SmartDashboard.putBoolean("Shooter/Shooter1Running", false);
+        SmartDashboard.putBoolean("Shooter/Shooter2Running", false);
+        SmartDashboard.putBoolean("Shooter/Shooter3Running", false);
+        SmartDashboard.putBoolean("Shooter/Shooter4Running", false);
+        SmartDashboard.putBoolean("Shooter/Shooter5Running", false);
+        SmartDashboard.putBoolean("Shooter/Shooter6Running", false);
     }
 
     @Override
     public void periodic() {
         rpmControl();
-        if (SmartDashboard.getBoolean("ShooterTelemetry", false)||SmartDashboard.getBoolean("AllTelemetry", false)) {telemetrize();}
+        if (SmartDashboard.getBoolean("ShooterTelemetry", true)||SmartDashboard.getBoolean("AllTelemetry", false)) {telemetrize();}
     }
 
     public void telemetrize() {
@@ -134,42 +142,42 @@ public class ShooterSubsystem extends Shooter {
         double motorRPM = goalRPM * ShooterConstants.flywheelGearRatio;
 
         // Motor 1
-        if (SmartDashboard.getBoolean("Shooter1Running", false)) {
+        if (SmartDashboard.getBoolean("Shooter/Shooter1Running", false)) {
             shooter1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter1.set(0);
         }
 
         // Motor 2
-        if (SmartDashboard.getBoolean("Shooter2Running", false)) {
+        if (SmartDashboard.getBoolean("Shooter/Shooter2Running", false)) {
             shooter2.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter2.set(0);
         }
 
         // Motor 3
-        if (SmartDashboard.getBoolean("Shooter3Running", false)) {
+        if (SmartDashboard.getBoolean("Shooter/Shooter3Running", false)) {
             shooter3.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter3.set(0);
         }
 
         // Motor 4
-        if (SmartDashboard.getBoolean("Shooter4Running", false)) {
+        if (SmartDashboard.getBoolean("Shooter/Shooter4Running", false)) {
             shooter4.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter4.set(0);
         }
 
         // Motor 5
-        if (SmartDashboard.getBoolean("Shooter5Running", false)) {
+        if (SmartDashboard.getBoolean("Shooter/Shooter5Running", false)) {
             shooter5.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter5.set(0);
         }
 
         // Motor 6
-        if (SmartDashboard.getBoolean("Shooter6Running", false)) {
+        if (SmartDashboard.getBoolean("Shooter/Shooter6Running", false)) {
             shooter6.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter6.set(0);

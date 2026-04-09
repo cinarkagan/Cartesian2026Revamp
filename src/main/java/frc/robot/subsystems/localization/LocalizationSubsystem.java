@@ -1,15 +1,19 @@
 package frc.robot.subsystems.localization;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.LimelightHelpers.PoseEstimate;
@@ -21,79 +25,30 @@ import frc.robot.utils.LimelightHelpers.PoseEstimate;
 */
 
 public class LocalizationSubsystem extends SubsystemBase {
-    CommandSwerveDrivetrain drivetrain;
-    LimelightHelpers.PoseEstimate currentPoseEstimate;
-    Pose2d currentPose2d;
-    boolean useMT2;
-
-
-    public LocalizationSubsystem(CommandSwerveDrivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-        this.useMT2 = true;
-        drivetrain.gyroReset();
+    LocalizerEstimate localizer;
+    CommandSwerveDrivetrain swerveDrivetrain;
+    public LocalizationSubsystem(CommandSwerveDrivetrain swerveDrivetrain) {
+        this.localizer = new LocalizerEstimate(swerveDrivetrain);
+        this.swerveDrivetrain = swerveDrivetrain;
     }
-
+    
     @Override
     public void periodic() {
-        //AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k
-        //LimelightHelpers.setPipelineIndex("", 0); // sonra sil
-        //if (LimelightHelpers.getCurrentPipelineIndex("") == 0) {
-            double robotYaw = drivetrain.getGyroHeading();
-            //sSystem.out.println(robotYaw);
-            LimelightHelpers.SetIMUMode("",2);
-            LimelightHelpers.SetRobotOrientation("", robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
-            LimelightHelpers.PoseEstimate limelightMeasurementEstimate;
-            if (useMT2) {
-                limelightMeasurementEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("");
-            } else {
-                limelightMeasurementEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
+        /*
+        PhotonTrackedTarget target = localizer.getBestofBothTarget();
+        
+        if (target.getPoseAmbiguity() < VisionConstants.ambiguityTol) { //If too high of an ambiguity, the update is rejected
+            if (!target.equals(new PhotonTrackedTarget())) {
+                Pose3d poseEstimate = localizer.getPoseEstimate(target);
+                if (!poseEstimate.equals(new Pose3d())) {
+                    swerveDrivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+                    swerveDrivetrain.addVisionMeasurement(
+                        poseEstimate.toPose2d(),
+                        1
+                    );
+                }
             }
-            Pose2d limelightPose2d = LimelightHelpers.getBotPose2d("");
-
-            if ((limelightMeasurementEstimate != null)&&(limelightMeasurementEstimate.tagCount > 0)) {
-                drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-                drivetrain.addVisionMeasurement(
-                        limelightMeasurementEstimate.pose,
-                        limelightMeasurementEstimate.timestampSeconds);
-                currentPoseEstimate = limelightMeasurementEstimate;
-            }            currentPose2d = limelightPose2d;
-
-            //System.out.println(LimelightHelpers.getTY(""));
-        //}
-        //System.out.print("X");
-        //System.out.println(getLimelightPose().getX());
-        //System.out.print("Y");
-        //System.out.println(getLimelightPose().getY());
-    }
-
-    public boolean hasAnEstimate() {
-        return (currentPoseEstimate != null);
-    }
-    public boolean hasABotPose() {
-        return (currentPose2d != null);
-    }
-
-    public double getLimelightTagHeading() {
-        if (hasAnEstimate()) {return currentPoseEstimate.pose.getRotation().getDegrees();}
-        return 0;
-    }
-
-    public Pose2d getLimelightPose() {
-        if (hasAnEstimate()) {return currentPoseEstimate.pose;}
-        return new Pose2d();
-    }
-
-    public LimelightHelpers.PoseEstimate getLimelightPoseEstimate() {
-        if (hasAnEstimate()) {return currentPoseEstimate;}
-        return new LimelightHelpers.PoseEstimate();
-    }
-
-    public Command useMT2() {
-        return new InstantCommand(()->{useMT2 = true;});
-    }
-
-    
-    public Command useMT() {
-        return new InstantCommand(()->{useMT2 = false;});
+        } */
+        localizer.periodic();
     }
 }
