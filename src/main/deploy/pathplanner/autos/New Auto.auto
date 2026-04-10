@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AutoPathIntake"
+            "pathName": "bump1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "swipe"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot1"
           }
         }
       ]

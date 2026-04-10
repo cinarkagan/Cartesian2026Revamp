@@ -24,16 +24,21 @@ import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.BooleanEntry;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,6 +51,7 @@ import frc.robot.constants.LocationConstants;
 import frc.robot.constants.SwerveConstants.TunerSwerveDrivetrain;
 import frc.robot.constants.TeleopConstants;
 import frc.robot.utils.Container;
+import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.LocalADStarAK;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -86,6 +92,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         private double distanceToHub;
         private double xDistanceToHub;
         private double yDistanceToHub;
+  private Field2d field = new Field2d();
+
+      private NetworkTable llTable = NetworkTableInstance.getDefault().getTable("LL");
+  private BooleanEntry llFixedEnabledEntry =
+      llTable.getBooleanTopic("LL-Fixed_Enabled").getEntry(true);
+  private BooleanEntry disabledLocoEnabledEntry =
+      llTable.getBooleanTopic("DisabledLocoEnabled").getEntry(true);
 
         /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
         private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -170,6 +183,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 startSimThread();
             }
             setupDrivetrain();
+    SmartDashboard.putData("Conf/Field", field);
+
         }
     
         /**
@@ -199,6 +214,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 startSimThread();
             }
             setupDrivetrain();
+    SmartDashboard.putData("Conf/Field", field);
+
         }
     
         /**
@@ -234,6 +251,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 startSimThread();
             }
             setupDrivetrain();
+                SmartDashboard.putData("Conf/Field", field);
         }
     
         public Pigeon2 getGyro() {
@@ -291,6 +309,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     );
                     m_hasAppliedOperatorPerspective = true;
                 });
+                if (Robot.isReal()) visionPeriodic();
+                field.setRobotPose(getPose());
+
             }
     
     
@@ -529,4 +550,190 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     );
     }
     public SwerveRequest.FieldCentric getDriveRequest() { return driveRequest; }
+  public double getGyroRate() {
+    return getState().Speeds.omegaRadiansPerSecond * (180.0 / Math.PI);
+  }
+  public double getHeading() {
+    double yawDeg = getPose().getRotation().getDegrees() % 360;
+    if (yawDeg < 0) {
+      yawDeg += 360;
+    }
+    return yawDeg;
+  }
+    //Vision
+      LimelightHelpers.IMUData imuData;
+  private static final Matrix<N3, N1> MT2_VISION_STD_DEVS = VecBuilder.fill(.6, .6, 9999999);
+  private static final Matrix<N3, N1> MT1_VISION_STD_DEVS = VecBuilder.fill(.5, .5, 9999999);
+  private double tempRobotYaw = 0.0;
+  private LimelightHelpers.PoseEstimate tempLimelightMeasurementFixed;
+  private boolean tempDoRejectUpdate = false;
+  private boolean tempDoRejectFixed = false;
+
+  public void addVisionMeasurementMT2() {
+    // Keep Limelight orientation aligned with drivetrain heading.
+    tempRobotYaw = getHeading();
+    LimelightHelpers.SetRobotOrientation("limelight", tempRobotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+    imuData = LimelightHelpers.getIMUData("limelight");
+
+    tempLimelightMeasurementFixed =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+
+    tempDoRejectUpdate = false;
+    tempDoRejectFixed = false;
+
+    if (Math.abs(getGyroRate()) > 360) {
+      tempDoRejectUpdate = true;
+    }
+
+    // if(drivetrain.swerveDataSupplier().get().swerveControlState == SwerveState.AIMING)
+    // doRejectUpdate = true;
+
+    /*if (tempLimelightMeasurementTurret != null) {
+      if (tempLimelightMeasurementTurret.tagCount == 0) {
+        tempDoRejectTurret = true;
+      }
+      if (Math.abs(imuData.accelZ) > 120.0) {
+        tempDoRejectTurret = true;
+      }
+    } else tempDoRejectTurret = true;*/
+
+    if (tempLimelightMeasurementFixed != null) {
+      if (tempLimelightMeasurementFixed.tagCount == 0) {
+        tempDoRejectFixed = true;
+      }
+    } else tempDoRejectFixed = true;
+
+    // Apply accepted measurements with conservative heading trust.
+    if (!tempDoRejectUpdate) {
+
+      if (!tempDoRejectFixed && llFixedEnabledEntry.get(true)) {
+        setVisionMeasurementStdDevs(MT2_VISION_STD_DEVS);
+        addVisionMeasurement(
+            tempLimelightMeasurementFixed.pose, tempLimelightMeasurementFixed.timestampSeconds);
+      }
+    }
+  }
+
+  public void addVisionMeasurementMT1() {
+    // Keep Limelight orientation aligned with drivetrain heading.
+    tempRobotYaw = getHeading();
+    LimelightHelpers.SetRobotOrientation("limelight", tempRobotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+    // Gather both camera estimates (legacy solve path).
+    tempLimelightMeasurementFixed = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+    tempDoRejectUpdate = false;
+    tempDoRejectFixed = false;
+
+    if (Math.abs(getGyroRate()) > 360) {
+      tempDoRejectUpdate = true;
+    }
+
+    if (tempLimelightMeasurementFixed != null) {
+      if (tempLimelightMeasurementFixed.tagCount < 1) {
+        tempDoRejectFixed = true;
+      }
+      if (tempLimelightMeasurementFixed.avgTagDist > 3.5) {
+        tempDoRejectFixed = true;
+      }
+    } else tempDoRejectFixed = true;
+
+    if (!tempDoRejectUpdate) {
+
+      if (!tempDoRejectFixed && llFixedEnabledEntry.get(true)) {
+        setVisionMeasurementStdDevs(MT1_VISION_STD_DEVS);
+        addVisionMeasurement(
+            tempLimelightMeasurementFixed.pose, tempLimelightMeasurementFixed.timestampSeconds);
+      }
+    }
+  }
+
+  public void resetWithMT1() {
+    // Prefer fixed camera reset; fall back to turret camera if needed.
+    tempRobotYaw = 0;
+
+    tempLimelightMeasurementFixed = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+    if (tempLimelightMeasurementFixed != null && tempLimelightMeasurementFixed.tagCount > 0) {
+      if (tempLimelightMeasurementFixed.avgTagDist < 3.0) {
+        resetPose(tempLimelightMeasurementFixed.pose);
+        tempRobotYaw = tempLimelightMeasurementFixed.pose.getRotation().getDegrees();
+      }
+    }
+
+    LimelightHelpers.SetRobotOrientation("limelight", tempRobotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
+    LimelightHelpers.SetIMUMode("limelight", 1);
+  }
+
+    private boolean isMode1Set = false;
+  private boolean isLLReady = false;
+
+  public void disabledPeriodic() {
+    // In disabled, optionally relocalize continuously for cleaner autonomous starts.
+    isMode1Set = true;
+
+    if (disabledLocoEnabledEntry.get(true)) {
+      resetWithMT1();
+    }
+  }
+
+  public void enabledPeriodic() {
+    // On first enable after disabled, switch LL IMU mode for in-match tracking.
+    if (!isLLReady && isMode1Set) {
+      tempRobotYaw = getPose().getRotation().getDegrees();
+
+      LimelightHelpers.SetRobotOrientation(
+          "limelight", tempRobotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
+      LimelightHelpers.SetIMUMode("limelight", 0);
+      isLLReady = true;
+    }
+    if (isLLReady) addVisionMeasurementMT2();
+    }
+
+      private boolean isEnabled = false;
+  // Vision sampling: run vision-heavy work once every VISION_LOOPS scheduler loops
+  private int visionLoopCounter = 0;
+  private static final int VISION_LOOPS = 4; // ~10Hz at 20ms loop; tune as needed
+  // Disabled relocalization can be expensive over NT; run at a lower cadence.
+  private int disabledVisionLoopCounter = 0;
+  private static final int DISABLED_VISION_LOOPS = 10; // ~5Hz at 20ms loop
+
+  public void visionPeriodic() {
+    boolean wasEnabled = isEnabled;
+    if (DriverStation.isEnabled() && !isEnabled) {
+      // rising edge: mark enabled
+      isEnabled = true;
+    }
+    if (DriverStation.isDisabled() && isEnabled) {
+      // falling edge: clear flags
+      isEnabled = false;
+      isLLReady = false;
+      disabledVisionLoopCounter = DISABLED_VISION_LOOPS;
+    }
+
+    if (isEnabled) {
+      if (!wasEnabled) {
+        // Just became enabled — run the enabledPeriodic once immediately to initialize Limelight
+        // state
+        enabledPeriodic();
+        visionLoopCounter = 0;
+      } else {
+        // Rate-limit expensive vision processing to reduce loop jitter.
+        visionLoopCounter++;
+        if (visionLoopCounter >= VISION_LOOPS) {
+          visionLoopCounter = 0;
+          enabledPeriodic();
+        }
+      }
+    } else {
+      // Disabled loop can be expensive due to relocalization + LL config writes.
+      // Keep periodic lightweight by throttling to a slower cadence.
+      disabledVisionLoopCounter++;
+      if (disabledVisionLoopCounter >= DISABLED_VISION_LOOPS) {
+        disabledVisionLoopCounter = 0;
+        disabledPeriodic();
+      }
+    }
+  }
 }

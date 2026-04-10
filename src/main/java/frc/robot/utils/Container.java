@@ -15,4 +15,5 @@ public class Container {
     public static void decreaseFuel() {
         fuelCount--;
     }
+  public static Boolean isBlue = false;
 }
