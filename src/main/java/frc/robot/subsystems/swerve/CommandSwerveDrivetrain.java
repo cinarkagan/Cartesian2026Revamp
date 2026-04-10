@@ -25,6 +25,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -84,6 +85,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SendableChooser<String> startPoseChooser = new SendableChooser<>();
+  private SlewRateLimiter joyXSlewLimiter = new SlewRateLimiter(25);
+  private SlewRateLimiter joyYSlewLimiter = new SlewRateLimiter(25);
 
     private SwerveRequest.FieldCentric driveRequest;
     private SwerveRequest.SwerveDriveBrake brakeRequest;
@@ -342,7 +345,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             return xDistanceToHub;
         }
         public double getYDistanceToHub() {
-            return xDistanceToHub;
+            return yDistanceToHub;
         }
         public double getTangentToHub() {
             return yDistanceToHub/xDistanceToHub;

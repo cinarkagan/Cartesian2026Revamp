@@ -45,7 +45,7 @@ public class DriveToPose extends Command {
   public void execute() {
     Pose2d botPose = drivetrain.getSwerveDriveState().Pose;
     double outputX = controllerX.calculate(botPose.getX());
-    double outputY = controllerX.calculate(botPose.getY());
+    double outputY = controllerY.calculate(botPose.getY());
     //outputY = MathUtil.clamp(outputY, -10, 10);
     //outputX = MathUtil.clamp(outputX, -10, 10);
     drivetrain.setControl(this.drive

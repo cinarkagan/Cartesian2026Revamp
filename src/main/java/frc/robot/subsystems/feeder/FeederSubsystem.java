@@ -32,13 +32,13 @@ public class FeederSubsystem extends Feeder {
     public FeederSubsystem() {
         // Feeder 1
         configFeeder1.inverted(FeederConstants.feeder1_reversed).idleMode(IdleMode.kBrake);
-        configFeeder1.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+        configFeeder1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configFeeder1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(FeederConstants.kP, FeederConstants.kI, FeederConstants.kD);
         feeder1.configure(configFeeder1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Feeder 2
         configFeeder2.inverted(FeederConstants.feeder2_reversed).idleMode(IdleMode.kBrake);
-        configFeeder2.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+        configFeeder2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configFeeder2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(FeederConstants.kP, FeederConstants.kI, FeederConstants.kD);
         feeder2.configure(configFeeder2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

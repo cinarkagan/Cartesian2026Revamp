@@ -45,13 +45,13 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(TeleopConstants.MaxSpeed);
 
     //private final CommandXboxController joystick = new CommandXboxController(0);
-    //public final CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain();
+    //spublic final CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain();
     public CommandSwerveDrivetrain drivetrain = SwerveConstants.createDrivetrain(); //init this
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     public final FeederSubsystem feederSubsystem = new FeederSubsystem();
-    public final LocalizationSubsystem localizationSubsystem = new LocalizationSubsystem(drivetrain);
-    public Teleop teleopController = new Teleop(logger, intakeSubsystem, shooterSubsystem, feederSubsystem);
+    ///public final LocalizationSubsystem localizationSubsystem = new LocalizationSubsystem(drivetrain);
+    public Teleop teleopController = new Teleop(logger, intakeSubsystem, shooterSubsystem, feederSubsystem, drivetrain);
     //public Autonomous autonomousController = new Autonomous(logger, drivetrain, machineSubsystem);
     public RobotContainer() {
         teleopController.getInitializeFunction();

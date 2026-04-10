@@ -13,6 +13,7 @@ public class AutoPassCommand extends Command{
     public AutoPassCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder) {
         this.m_shooter = m_shooter;
         this.m_feeder = m_feeder;
+        addRequirements(m_feeder,m_shooter);
     }
 
     @Override

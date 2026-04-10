@@ -28,19 +28,21 @@ public class Teleop implements Controller {
     private boolean simulationMode = Container.simulationMode;
     private Telemetry logger;
     private boolean intakeTest = true;
+    private boolean test = false;
     //private final SlewRateLimiter limiter = new SlewRateLimiter(0.8);
-    //private CommandSwerveDrivetrain drivetrain;
+    private CommandSwerveDrivetrain drivetrain;
     private IntakeSubsystem intakeSubsystem;
     private CommandXboxController joystick;
     private ShooterSubsystem shooterSubsystem;
     private FeederSubsystem feederSubsystem;
     //private Joystick joystick;
-    public Teleop(Telemetry logger,IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem){//CommandSwerveDrivetrain drivetrain) {
+    public Teleop(Telemetry logger,IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem, CommandSwerveDrivetrain commandSwerveDrivetrain){//CommandSwerveDrivetrain drivetrain) {
         this.logger = logger;
         //this.joystick = new Joystick(0);
         this.intakeSubsystem = intakeSubsystem;
         this.shooterSubsystem = shooterSubsystem;
         this.feederSubsystem = feederSubsystem;
+        this.drivetrain = commandSwerveDrivetrain;
         this.joystick = new CommandXboxController(0);
     }
     @Override
@@ -91,6 +93,7 @@ public class Teleop implements Controller {
             // Reset the field-centric heading on left bumper press.
             //joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
             //joystick.leftBumper().onTrue(new InstantCommand(()->{shooterSimulation.launchFuel();}));
+            if (test) {
             if (intakeTest) {
                 joystick.a().onTrue(intakeSubsystem.startIdle());
                 joystick.b().onTrue(intakeSubsystem.stop());
@@ -100,8 +103,14 @@ public class Teleop implements Controller {
                 joystick.a().onTrue(new ParallelCommandGroup(shooterSubsystem.idle(),feederSubsystem.startIdle()));
                 joystick.b().onTrue(new ParallelCommandGroup(shooterSubsystem.startShoot(),feederSubsystem.startFeeding()));
                 joystick.leftBumper().onTrue(new ParallelCommandGroup(shooterSubsystem.stop(),feederSubsystem.stop()));
+            }} else {
+                if (driveEnabled) {
+                drivetrain.setDefaultCommand(
+                    drivetrain.teleopDriveCommand(joystick)
+                );
             }
         }
+     }
         //drivetrain.registerTelemetry(logger::telemeterize);
     }
     /*public Joystick getJoystick() {

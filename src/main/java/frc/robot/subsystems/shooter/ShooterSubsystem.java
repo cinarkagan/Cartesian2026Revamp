@@ -137,7 +137,7 @@ public class ShooterSubsystem extends Shooter {
         shooter5.set(0);
         shooter6.set(0);
     }*/
-
+    //TODOÇ fix goalRPM
     public void rpmControl() {
         double motorRPM = ShooterConstants.IDLE_RPM * ShooterConstants.flywheelGearRatio;
 
