@@ -430,8 +430,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             return super.getState();
         }
     
-        public void configureAutoBuilder() {
-            Pathfinding.setPathfinder(new LocalADStarAK());
+        private void configureAutoBuilder() {
             try {
                 var config = RobotConfig.fromGUISettings();
                 AutoBuilder.configure(
@@ -446,9 +445,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     ),
                     new PPHolonomicDriveController(
                         // PID constants for translation
-                        new PIDConstants(DriveConstants.driveP, DriveConstants.driveI, DriveConstants.driveD),
+                        new PIDConstants(10,0,0),
                         // PID constants for rotation
-                        new PIDConstants(DriveConstants.turnP, DriveConstants.turnI, DriveConstants.turnD)
+                        new PIDConstants(7,0,0)
                     ),
                     config,
                     // Assume the path needs to be flipped for Red vs Blue, this is normally the case

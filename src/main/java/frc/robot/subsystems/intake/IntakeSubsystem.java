@@ -89,10 +89,11 @@ public class IntakeSubsystem extends Intake {
     }
  
     public void rpmControl() {
-        double motorRPM =  -1 * goalRPM * IntakeConstants.intakeGearRatio;
+        //goalRPM
+        double motorRPM =  -1 * 0 * IntakeConstants.intakeGearRatio;
         m_intake.setControl(m_velocityVoltage.withVelocity(motorRPM/60));
     }
-
+    
     public void pivotControl() {
         switch (pivotState) {
             case CLOSED:

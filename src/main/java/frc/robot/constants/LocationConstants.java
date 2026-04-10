@@ -41,3 +41,11 @@ public class LocationConstants {
     public static final double MIN_SHOOT_Y = 0;
     public static final double MAX_SHOOT_Y = 0;
 }
+/*
+ * 
+Mirror:
+d = y - 4
+4.02-d = mirrory
+mirrory  = 4 - y + 4
+mirrory = 8 - y
+ */

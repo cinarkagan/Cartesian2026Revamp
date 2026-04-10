@@ -52,7 +52,7 @@ public class FeederSubsystem extends Feeder {
     }
 
     public void rpmControl() {
-        double motorRPM = goalRPM * FeederConstants.feederGearRatio;
+        double motorRPM = 0;//goalRPM * FeederConstants.feederGearRatio;
         feeder1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         feeder2.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     }
