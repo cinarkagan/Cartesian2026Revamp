@@ -51,46 +51,37 @@ public class ShooterSubsystem extends Shooter {
     public ShooterSubsystem(){//CommandSwerveDrivetrain commandSwerveDrivetrain) {
         //shooterCalc = new ShooterCalculator(commandSwerveDrivetrain);
 
-        // Shooter 1
+        // Shooter 1 — leader motor, runs closed-loop velocity
         configShooter1.inverted(ShooterConstants.shooter1_reversed).idleMode(IdleMode.kCoast);
         configShooter1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configShooter1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter1.smartCurrentLimit(40);
+        configShooter1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD)
+            .velocityFF(ShooterConstants.kFF);
+        configShooter1.smartCurrentLimit(30);
         shooter1.configure(configShooter1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Shooter 2
-        configShooter2.inverted(ShooterConstants.shooter2_reversed).idleMode(IdleMode.kCoast);
-        configShooter2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configShooter2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter2.smartCurrentLimit(40);
+        // Shooters 2-6 — followers of shooter1.
+        // invert=true because shooter1 is reversed while followers are not,
+        // so they need to oppose the leader's output to spin in the same physical direction.
+        // Verify on the robot: if followers spin backwards, change the invert argument to false.
+        configShooter2.follow(shooter1, true).idleMode(IdleMode.kCoast);
+        configShooter2.smartCurrentLimit(30);
         shooter2.configure(configShooter2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Shooter 3
-        configShooter3.inverted(ShooterConstants.shooter3_reversed).idleMode(IdleMode.kCoast);
-        configShooter3.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configShooter3.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter3.smartCurrentLimit(40);
+        configShooter3.follow(shooter1, true).idleMode(IdleMode.kCoast);
+        configShooter3.smartCurrentLimit(30);
         shooter3.configure(configShooter3, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Shooter 4
-        configShooter4.inverted(ShooterConstants.shooter4_reversed).idleMode(IdleMode.kCoast);
-        configShooter4.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configShooter4.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter4.smartCurrentLimit(40);
+        configShooter4.follow(shooter1, true).idleMode(IdleMode.kCoast);
+        configShooter4.smartCurrentLimit(30);
         shooter4.configure(configShooter4, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Shooter 5
-        configShooter5.inverted(ShooterConstants.shooter5_reversed).idleMode(IdleMode.kCoast);
-        configShooter5.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configShooter5.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter5.smartCurrentLimit(40);
+        configShooter5.follow(shooter1, true).idleMode(IdleMode.kCoast);
+        configShooter5.smartCurrentLimit(30);
         shooter5.configure(configShooter5, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Shooter 6
-        configShooter6.inverted(ShooterConstants.shooter6_reversed).idleMode(IdleMode.kCoast);
-        configShooter6.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configShooter6.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter6.smartCurrentLimit(40);
+        configShooter6.follow(shooter1, true).idleMode(IdleMode.kCoast);
+        configShooter6.smartCurrentLimit(30);
         shooter6.configure(configShooter6, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         //Before Telemetry
         SmartDashboard.putBoolean("ShooterTelemetry", true);
@@ -138,55 +129,20 @@ public class ShooterSubsystem extends Shooter {
         shooter5.set(0);
         shooter6.set(0);
     }*/
-    //TODOÇ fix goalRPM
     public void rpmControl() {
         double motorRPM = goalRPM * ShooterConstants.flywheelGearRatio;
         if (true) {
             motorRPM = SmartDashboard.getNumber("Shooter/CustomRPM", ShooterConstants.SHOOT_RPM);
         }
 
-        // Motor 1
-        if (SmartDashboard.getBoolean("Shooter/Shooter1Running", false)) {
+        // Only command the leader; followers mirror it automatically.
+        if (motorRPM != 0) {
             shooter1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter1.set(0);
         }
+    }
 
-        // Motor 2
-        if (SmartDashboard.getBoolean("Shooter/Shooter2Running", false)) {
-            shooter2.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        } else {
-            shooter2.set(0);
-        }
-
-        // Motor 3
-        if (SmartDashboard.getBoolean("Shooter/Shooter3Running", false)) {
-            shooter3.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        } else {
-            shooter3.set(0);
-        }
-
-        // Motor 4
-        if (SmartDashboard.getBoolean("Shooter/Shooter4Running", false)) {
-            shooter4.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        } else {
-            shooter4.set(0);
-        }
-
-        // Motor 5
-        if (SmartDashboard.getBoolean("Shooter/Shooter5Running", false)) {
-            shooter5.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        } else {
-            shooter5.set(0);
-        }
-
-        // Motor 6
-        if (SmartDashboard.getBoolean("Shooter/Shooter6Running", false)) {
-            shooter6.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        } else {
-            shooter6.set(0);
-        }
-    }    
     @Override
     public boolean isAtRPM() {
         return isMotorAtRPM(getVelocityShooter1())

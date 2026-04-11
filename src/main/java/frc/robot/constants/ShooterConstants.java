@@ -36,9 +36,10 @@ public class ShooterConstants {
     public static double MIN_FLYWHEEL_SPEED = 100;
     public static double MAX_FLYWHEEL_SPEED = 300;
 
-    public static double kP = 0.011; //pid 
+    public static double kP = 0.011; //pid
     public static double kI = 0;
-    public static double kD = 0;
+    public static double kD = 0.0005;
+    public static double kFF = 1.0 / 5700.0; // NEO free speed feedforward (~0.000175)
 
     //Shoot Poses
     public static double autoShootRPM = 100;
