@@ -318,8 +318,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             }
     
     
-            if(Robot.isReal()) {
-            if (DriverStation.getAlliance().get() == Alliance.Red) {
+            boolean isRed = DriverStation.getAlliance().isPresent()
+                ? DriverStation.getAlliance().get() == Alliance.Red
+                : true; // default to Red until DS connects
+
+            if (isRed) {
                 distanceToHub = (LocationConstants.RED_HUB_AIM_POSE.getTranslation().getDistance(getPose().getTranslation()));
                 xDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getX() - getPose().getTranslation().getX()));
                 yDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getY() - getPose().getTranslation().getY()));
@@ -327,11 +330,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 distanceToHub = (LocationConstants.BLUE_HUB_AIM_POSE.getTranslation().getDistance(getPose().getTranslation()));
                 xDistanceToHub = (Math.abs(LocationConstants.BLUE_HUB_AIM_POSE.getTranslation().getX() - getPose().getTranslation().getX()));
                 yDistanceToHub = (Math.abs(LocationConstants.BLUE_HUB_AIM_POSE.getTranslation().getY() - getPose().getTranslation().getY()));
-            }
-            } else {
-                distanceToHub = (LocationConstants.RED_HUB_AIM_POSE.getTranslation().getDistance(getPose().getTranslation()));
-                xDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getX() - getPose().getTranslation().getX()));
-                yDistanceToHub = (Math.abs(LocationConstants.RED_HUB_AIM_POSE.getTranslation().getY() - getPose().getTranslation().getY()));
             }
     
     
