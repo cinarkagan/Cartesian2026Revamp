@@ -5,18 +5,18 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public class IntakeConstants {
     public static double intakeGearRatio = 1;
-    public static double intakeIntakeRPM = 3000;
-    public static double intakeOuttakeRPM = -3500;
+    public static double intakeIntakeRPM = 4000;
+    public static double intakeOuttakeRPM = -4500;
     public static double intakeIdleRPM = 1500;
     public static double rpmTol = 50;
 
-    public static double kP = 0.015;
+    public static double kP = 0.020;
     public static double kI = 0;
     public static double kD = 0;
 
-    public static double PivotkP = 0.35; //Tuna Ercan kP: 3.596;
+    public static double PivotkP = 0.60; //Tuna Ercan kP: 3.596;
     public static double PivotkI = 0.0;
-    public static double PivotkD = 0.0;
+    public static double PivotkD = 0.15;
 
 
     /* Gereksiz
@@ -27,7 +27,7 @@ public class IntakeConstants {
     */
     public static double pivotClosePosition = 0; //zero position
     public static double pivotOpenPositionOffset = 9.12;
-    public static double pivotSemiPositionOffset = 0;
+    public static double pivotSemiPositionOffset = 6;
 
     public static double rollerGearRatio = 2;
     public static int intakeMotor1_ID = 25;

@@ -14,6 +14,7 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.AllStates;
 import frc.robot.utils.AllStates.ShooterStates;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -59,29 +60,30 @@ public class ShooterSubsystem extends Shooter {
             .velocityFF(ShooterConstants.kFF);
         configShooter1.smartCurrentLimit(30);
         shooter1.configure(configShooter1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        //sol
 
         // Shooters 2-6 — followers of shooter1.
         // invert=true because shooter1 is reversed while followers are not,
         // so they need to oppose the leader's output to spin in the same physical direction.
         // Verify on the robot: if followers spin backwards, change the invert argument to false.
-        configShooter2.follow(shooter1, true).idleMode(IdleMode.kCoast);
-        configShooter2.smartCurrentLimit(30);
+        configShooter2.follow(shooter1, false).idleMode(IdleMode.kCoast);
+        configShooter2.smartCurrentLimit(40).voltageCompensation(12);
         shooter2.configure(configShooter2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        configShooter3.follow(shooter1, true).idleMode(IdleMode.kCoast);
-        configShooter3.smartCurrentLimit(30);
+        configShooter3.follow(shooter1, false).idleMode(IdleMode.kCoast);
+        configShooter3.smartCurrentLimit(40).voltageCompensation(12);
         shooter3.configure(configShooter3, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         configShooter4.follow(shooter1, true).idleMode(IdleMode.kCoast);
-        configShooter4.smartCurrentLimit(30);
+        configShooter4.smartCurrentLimit(40).voltageCompensation(12);
         shooter4.configure(configShooter4, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         configShooter5.follow(shooter1, true).idleMode(IdleMode.kCoast);
-        configShooter5.smartCurrentLimit(30);
+        configShooter5.smartCurrentLimit(40).voltageCompensation(12);
         shooter5.configure(configShooter5, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         configShooter6.follow(shooter1, true).idleMode(IdleMode.kCoast);
-        configShooter6.smartCurrentLimit(30);
+        configShooter6.smartCurrentLimit(40).voltageCompensation(12);
         shooter6.configure(configShooter6, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         //Before Telemetry
         SmartDashboard.putBoolean("ShooterTelemetry", true);
@@ -92,6 +94,8 @@ public class ShooterSubsystem extends Shooter {
         SmartDashboard.putBoolean("Shooter/Shooter5Running", false);
         SmartDashboard.putBoolean("Shooter/Shooter6Running", false);
         SmartDashboard.putNumber("Shooter/CustomRPM", ShooterConstants.SHOOT_RPM);
+        SmartDashboard.putNumber("Shooter/Power", 0.4);
+
     }
 
     @Override
@@ -130,8 +134,8 @@ public class ShooterSubsystem extends Shooter {
         shooter6.set(0);
     }*/
     public void rpmControl() {
-        double motorRPM = goalRPM * ShooterConstants.flywheelGearRatio;
-        if (true) {
+        /*double motorRPM = goalRPM * ShooterConstants.flywheelGearRatio;
+        if (customRPM) {
             motorRPM = SmartDashboard.getNumber("Shooter/CustomRPM", ShooterConstants.SHOOT_RPM);
         }
 
@@ -140,7 +144,12 @@ public class ShooterSubsystem extends Shooter {
             shooter1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             shooter1.set(0);
-        }
+        }*/
+       if (customRPM) {
+        shooter1.set(SmartDashboard.getNumber("Shooter/Power", 0.4));
+       } else {
+        shooter1.set(0);
+       }
     }
 
     @Override
@@ -185,29 +194,29 @@ public class ShooterSubsystem extends Shooter {
 
     @Override
     public Command startShoot() {
-        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.SHOOT_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.SHOOT_RPM);customRPM = false;});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
         //return new InstantCommand(() -> {setGoalRPM(shooterCalc.calculateFlywheelShootRPMFromCurrentPose());});
     }
 
     @Override
     public Command startPass() {
-        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.SHOOT_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.SHOOT_RPM);customRPM = false;});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
         //return new InstantCommand(() -> {setGoalRPM(shooterCalc.calculateFlywheelPassRPMFromCurrentPose());});
     }
 
     @Override
     public Command startIdle() {
-        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.IDLE_RPM);});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.IDLE_RPM);customRPM = false;});//shooterCalc.calculateRestFlywheelSpeedFromCurrentPose());});
     }
 
     @Override
     public Command startReverse() {
-        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.REVERSE_RPM);});
+        return new InstantCommand(() -> {setGoalRPM(ShooterConstants.REVERSE_RPM);customRPM = false;});
     }
 
     @Override
     public Command stop() {
-        return new InstantCommand(() -> {setGoalRPM(0);});
+        return new InstantCommand(() -> {setGoalRPM(0);customRPM = false;});
     }
     public Command custom() {
         return new InstantCommand(() -> {customRPM = true;});

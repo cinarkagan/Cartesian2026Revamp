@@ -3,17 +3,20 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class AutoPassCommand extends Command{
     private final ShooterSubsystem m_shooter;
     private final FeederSubsystem m_feeder;
+    private final IntakeSubsystem m_intake;
     private boolean isFeedTimeSet = false;
 
     long feedStartTime = 0;
-    public AutoPassCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder) {
+    public AutoPassCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder, IntakeSubsystem m_intake) {
         this.m_shooter = m_shooter;
         this.m_feeder = m_feeder;
+        this.m_intake = m_intake;
         addRequirements(m_feeder,m_shooter);
     }
 
@@ -25,6 +28,7 @@ public class AutoPassCommand extends Command{
     @Override
     public void execute() {
         if (m_shooter.isAtRPM()) {
+            m_intake.semiIntakeMethod();
             m_feeder.startFeedingMethod();
             if (!isFeedTimeSet) {
                 feedStartTime = System.currentTimeMillis();

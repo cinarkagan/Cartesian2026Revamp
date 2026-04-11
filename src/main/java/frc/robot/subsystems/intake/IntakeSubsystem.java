@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.commands.TurnToAngle;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.IntakeConstants.PivotStates;
 import static edu.wpi.first.units.Units.*;
@@ -34,6 +35,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 public class IntakeSubsystem extends Intake {
@@ -86,6 +88,9 @@ public class IntakeSubsystem extends Intake {
         pivotControl();
         if (SmartDashboard.getBoolean("IntakeTelemetry", true) || SmartDashboard.getBoolean("AllTelemetry", false)) {
             telemetrize();
+        }
+        if (DriverStation.isDisabled()) {
+            m_pivot.setPosition(IntakeConstants.pivotClosePosition);
         }
     }
  
@@ -162,7 +167,9 @@ public class IntakeSubsystem extends Intake {
     public Command startReverse() {
         return new InstantCommand(() -> setGoalRPM(IntakeConstants.intakeOuttakeRPM));
     }
- 
+    public Command resetPivotCommand() {
+        return new InstantCommand(() -> m_pivot.setPosition(IntakeConstants.pivotClosePosition));
+    }
     @Override
     public Command stop() {
         return new InstantCommand(() -> setGoalRPM(0));
@@ -184,6 +191,10 @@ public class IntakeSubsystem extends Intake {
         return new InstantCommand(() -> {pivotState = PivotStates.SEMI; isIntakeOpen = true;});
     }
 
+    public void semiIntakeMethod() {
+        pivotState = PivotStates.SEMI; isIntakeOpen = true;
+    }
+
     public void setupConfigs_INTAKE() {
                 /* Voltage-based velocity requires a velocity feed forward to account for the back-emf of the motor */
         configs_intake.Slot0.kS = 0.1; // To account for friction, add 0.1 V of static feedforward
@@ -192,8 +203,8 @@ public class IntakeSubsystem extends Intake {
         configs_intake.Slot0.kI = IntakeConstants.kI; // No output for integrated error
         configs_intake.Slot0.kD = IntakeConstants.kD; // No output for error derivative
         // Peak output of 8 volts
-        configs_intake.Voltage.withPeakForwardVoltage(Volts.of(8))
-        .withPeakReverseVoltage(Volts.of(-8));
+        configs_intake.Voltage.withPeakForwardVoltage(Volts.of(9))
+        .withPeakReverseVoltage(Volts.of(-9));
 
         /* Torque-based velocity does not require a velocity feed forward, as torque will accelerate the rotor up to the desired velocity by itself */
         configs_intake.Slot1.kS = 2.5; // To account for friction, add 2.5 A of static feedforward

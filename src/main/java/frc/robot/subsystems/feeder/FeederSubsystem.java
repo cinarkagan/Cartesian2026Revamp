@@ -31,41 +31,35 @@ public class FeederSubsystem extends Feeder {
 
     public FeederSubsystem() {
         // Feeder 1
-        configFeeder1.inverted(FeederConstants.feeder1_reversed).idleMode(IdleMode.kBrake);
+        configFeeder1.inverted(FeederConstants.feeder1_reversed).idleMode(IdleMode.kCoast);
         configFeeder1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configFeeder1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(FeederConstants.kP, FeederConstants.kI, FeederConstants.kD);
+        configFeeder1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(FeederConstants.kP, FeederConstants.kI, FeederConstants.kD).velocityFF(FeederConstants.kFF);
+        configFeeder1.smartCurrentLimit(40);
         feeder1.configure(configFeeder1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Feeder 2
-        configFeeder2.inverted(FeederConstants.feeder2_reversed).idleMode(IdleMode.kBrake);
-        configFeeder2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-        configFeeder2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(FeederConstants.kP, FeederConstants.kI, FeederConstants.kD);
+        configFeeder2.follow(feeder1, true).idleMode(IdleMode.kCoast);
+        configFeeder2.smartCurrentLimit(40);
         feeder2.configure(configFeeder2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SmartDashboard.putBoolean("Feeder/Feeder1", false);
-        SmartDashboard.putBoolean("Feeder/Feeder2", false);
+        SmartDashboard.putBoolean("Feeder/Feeder1", true);
     }
 
     @Override
     public void periodic() {
         rpmControl();
-        if (SmartDashboard.getBoolean("FeederTelemetry", false) || SmartDashboard.getBoolean("AllTelemetry", false)) {
+        if (SmartDashboard.getBoolean("FeederTelemetry", true) || SmartDashboard.getBoolean("AllTelemetry", false)) {
             telemetrize();
         }
     }
 
     public void rpmControl() {
         double motorRPM = goalRPM * FeederConstants.feederGearRatio;
-        if (SmartDashboard.getBoolean("Feeder/Feeder1", false)) {
+        if (true) {
             feeder1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
         } else {
             feeder1.set(0);
-        }            
-        if (SmartDashboard.getBoolean("Feeder/Feeder2", false)) {
-            feeder2.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        } else {
-            feeder2.set(0);
-        }    
+        } 
     }
 
     @Override

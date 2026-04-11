@@ -113,8 +113,11 @@ public class Teleop implements Controller {
                 joystick.x().onTrue(intakeSubsystem.closeIntake().alongWith(intakeSubsystem.stop()));
                 joystick.rightBumper().onTrue(intakeSubsystem.startIntake());
                 joystick.leftBumper().onTrue(intakeSubsystem.stop());
-                //joystick.leftTrigger().whileTrue(new AutoShootCommand(shooterSubsystem, feederSubsystem));
-                joystick.leftTrigger().onTrue(intakeSubsystem.startReverse());
+                joystick.leftTrigger().whileTrue(new AutoShootCommand(shooterSubsystem, feederSubsystem,intakeSubsystem)).onFalse(new ParallelCommandGroup(
+                    shooterSubsystem.stop(),
+                    feederSubsystem.stop()
+                ));
+                joystick.rightTrigger().onTrue(intakeSubsystem.resetPivotCommand());                //joystick.rightTrigger().whileTrue(feederSubsystem.startFeeding()).whileFalse(feederSubsystem.stop());
              }
         }
      }
