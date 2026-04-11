@@ -49,6 +49,7 @@ public class IntakeSubsystem extends Intake {
     private final TalonFX m_pivot = new TalonFX(IntakeConstants.pivotMotor_ID, IntakeConstants.canbus);
     private final PositionVoltage m_positionVoltage = new PositionVoltage(0).withSlot(0);
     TalonFXConfiguration configs_pivot = new TalonFXConfiguration();
+    private boolean isIntakeOpen = false;
 
     public IntakeSubsystem() {
         SmartDashboard.putBoolean("Pivot Control", false);
@@ -89,8 +90,9 @@ public class IntakeSubsystem extends Intake {
     }
  
     public void rpmControl() {
-        //goalRPM
-        double motorRPM =  -1 * 0 * IntakeConstants.intakeGearRatio;
+        
+        double motorRPM =  -1 * goalRPM * IntakeConstants.intakeGearRatio;
+        if (!isIntakeOpen) {motorRPM = 0;}
         m_intake.setControl(m_velocityVoltage.withVelocity(motorRPM/60));
     }
     
@@ -106,7 +108,7 @@ public class IntakeSubsystem extends Intake {
                 goalPosition = (IntakeConstants.pivotClosePosition + IntakeConstants.pivotOpenPositionOffset);
                 break;
         }
-        if (SmartDashboard.getBoolean("PivotControl", false)) {
+        if (SmartDashboard.getBoolean("PivotControl", true)) {
             m_pivot.setControl(m_positionVoltage.withPosition(goalPosition));
         }
     }
@@ -169,17 +171,17 @@ public class IntakeSubsystem extends Intake {
  
     @Override
     public Command openIntake() {
-        return new InstantCommand(() -> pivotState = PivotStates.OPEN);
+        return new InstantCommand(() -> {pivotState = PivotStates.OPEN; isIntakeOpen = true;});
     }
  
     @Override
     public Command closeIntake() {
-        return new InstantCommand(() -> {pivotState = PivotStates.CLOSED; goalRPM = 0;});
+        return new InstantCommand(() -> {pivotState = PivotStates.CLOSED; goalRPM = 0; isIntakeOpen = false;});
     }
  
     @Override
     public Command semiIntake() {
-        return new InstantCommand(() -> pivotState = PivotStates.SEMI);
+        return new InstantCommand(() -> {pivotState = PivotStates.SEMI; isIntakeOpen = true;});
     }
 
     public void setupConfigs_INTAKE() {

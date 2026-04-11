@@ -8,6 +8,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 public class AutoShootCommand extends Command{
     private final ShooterSubsystem m_shooter;
     private final FeederSubsystem m_feeder;
+    private boolean isFeedTimeSet = false;
 
     long feedStartTime = 0;
     public AutoShootCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder) {
@@ -17,22 +18,25 @@ public class AutoShootCommand extends Command{
 
     @Override
     public void initialize() {
-        m_shooter.startShootMethod();
+        m_shooter.customMethod(); //revert to shoot
     }
 
     @Override
     public void execute() {
         if (m_shooter.isAtRPM()) {
             m_feeder.startFeedingMethod();
-            if (feedStartTime == 0) {
+            if (!isFeedTimeSet) {
                 feedStartTime = System.currentTimeMillis();
+                isFeedTimeSet = true;
             }
         }
     }
 
     @Override
     public boolean isFinished() {
-        if ((System.currentTimeMillis()-feedStartTime)>ShooterConstants.maxShootTime) {return true;}
+        if (isFeedTimeSet){
+            if ((System.currentTimeMillis()-feedStartTime)>ShooterConstants.maxShootTime*1000) {return true;}
+        }
         return false;
     }
 

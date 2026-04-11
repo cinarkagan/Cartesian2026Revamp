@@ -312,7 +312,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     );
                     m_hasAppliedOperatorPerspective = true;
                 });
-                if (Robot.isReal()) visionPeriodic();
+                //  if (Robot.isReal()) visionPeriodic();
                 field.setRobotPose(getPose());
 
             }
@@ -546,8 +546,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command teleopDriveCommand(CommandXboxController joystick) {
         return this.applyRequest(() ->
-                        driveRequest.withVelocityX(joystick.getLeftY() * TeleopConstants.MaxSpeed) // Drive forward with negative Y (forward)
-                            .withVelocityY(joystick.getLeftX() * TeleopConstants.MaxSpeed) // Drive left with negative X (left)
+                        driveRequest.withVelocityX(-joystick.getLeftY() * TeleopConstants.MaxSpeed) // Drive forward with negative Y (forward)
+                            .withVelocityY(-joystick.getLeftX() * TeleopConstants.MaxSpeed) // Drive left with negative X (left)
                             .withRotationalRate(-joystick.getRightX() * TeleopConstants.MaxAngularRate)// Drive counterclockwise with negative X (left)
                     );
     }

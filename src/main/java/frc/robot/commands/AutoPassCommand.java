@@ -8,6 +8,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 public class AutoPassCommand extends Command{
     private final ShooterSubsystem m_shooter;
     private final FeederSubsystem m_feeder;
+    private boolean isFeedTimeSet = false;
 
     long feedStartTime = 0;
     public AutoPassCommand(ShooterSubsystem m_shooter, FeederSubsystem m_feeder) {
@@ -25,16 +26,18 @@ public class AutoPassCommand extends Command{
     public void execute() {
         if (m_shooter.isAtRPM()) {
             m_feeder.startFeedingMethod();
-            if (feedStartTime == 0) {
+            if (!isFeedTimeSet) {
                 feedStartTime = System.currentTimeMillis();
+                isFeedTimeSet = true;
             }
         }
     }
 
     @Override
     public boolean isFinished() {
-        if ((System.currentTimeMillis()-feedStartTime)>ShooterConstants.maxShootTime) {return true;}
-        return false;
+        if (isFeedTimeSet){
+            if ((System.currentTimeMillis()-feedStartTime)>ShooterConstants.maxShootTime*1000) {return true;}
+        }        return false;
     }
 
     @Override

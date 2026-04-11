@@ -40,7 +40,8 @@ public class ShooterSubsystem extends Shooter {
     SparkMaxConfig configShooter5 = new SparkMaxConfig();
     SparkMaxConfig configShooter6 = new SparkMaxConfig();
 
-    public double goalRPM = ShooterConstants.IDLE_RPM;
+    public double goalRPM = 0;
+    public boolean customRPM = false;
 
 
     //private final ShooterCalculator shooterCalc;
@@ -51,45 +52,45 @@ public class ShooterSubsystem extends Shooter {
         //shooterCalc = new ShooterCalculator(commandSwerveDrivetrain);
 
         // Shooter 1
-        configShooter1.inverted(ShooterConstants.shooter1_reversed).idleMode(IdleMode.kBrake);
+        configShooter1.inverted(ShooterConstants.shooter1_reversed).idleMode(IdleMode.kCoast);
         configShooter1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configShooter1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter1.idleMode(IdleMode.kCoast);
+        configShooter1.smartCurrentLimit(40);
         shooter1.configure(configShooter1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Shooter 2
-        configShooter2.inverted(ShooterConstants.shooter2_reversed).idleMode(IdleMode.kBrake);
+        configShooter2.inverted(ShooterConstants.shooter2_reversed).idleMode(IdleMode.kCoast);
         configShooter2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configShooter2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter2.idleMode(IdleMode.kCoast);
+        configShooter2.smartCurrentLimit(40);
         shooter2.configure(configShooter2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Shooter 3
-        configShooter3.inverted(ShooterConstants.shooter3_reversed).idleMode(IdleMode.kBrake);
+        configShooter3.inverted(ShooterConstants.shooter3_reversed).idleMode(IdleMode.kCoast);
         configShooter3.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configShooter3.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter3.idleMode(IdleMode.kCoast);
+        configShooter3.smartCurrentLimit(40);
         shooter3.configure(configShooter3, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Shooter 4
-        configShooter4.inverted(ShooterConstants.shooter4_reversed).idleMode(IdleMode.kBrake);
+        configShooter4.inverted(ShooterConstants.shooter4_reversed).idleMode(IdleMode.kCoast);
         configShooter4.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configShooter4.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter4.idleMode(IdleMode.kCoast);
+        configShooter4.smartCurrentLimit(40);
         shooter4.configure(configShooter4, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Shooter 5
-        configShooter5.inverted(ShooterConstants.shooter5_reversed).idleMode(IdleMode.kBrake);
+        configShooter5.inverted(ShooterConstants.shooter5_reversed).idleMode(IdleMode.kCoast);
         configShooter5.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configShooter5.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter5.idleMode(IdleMode.kCoast);
+        configShooter5.smartCurrentLimit(40);
         shooter5.configure(configShooter5, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Shooter 6
-        configShooter6.inverted(ShooterConstants.shooter6_reversed).idleMode(IdleMode.kBrake);
+        configShooter6.inverted(ShooterConstants.shooter6_reversed).idleMode(IdleMode.kCoast);
         configShooter6.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configShooter6.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-        configShooter6.idleMode(IdleMode.kCoast);
+        configShooter6.smartCurrentLimit(40);
         shooter6.configure(configShooter6, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         //Before Telemetry
         SmartDashboard.putBoolean("ShooterTelemetry", true);
@@ -99,6 +100,7 @@ public class ShooterSubsystem extends Shooter {
         SmartDashboard.putBoolean("Shooter/Shooter4Running", false);
         SmartDashboard.putBoolean("Shooter/Shooter5Running", false);
         SmartDashboard.putBoolean("Shooter/Shooter6Running", false);
+        SmartDashboard.putNumber("Shooter/CustomRPM", ShooterConstants.SHOOT_RPM);
     }
 
     @Override
@@ -116,7 +118,6 @@ public class ShooterSubsystem extends Shooter {
         SmartDashboard.putNumber("Shooter/RPM6", getVelocityShooter6());
         SmartDashboard.putNumber("Shooter/RPM Average", getAverageRPM());
         SmartDashboard.putNumber("Shooter/RPM Goal", getRPMGoal());
-        SmartDashboard.putBoolean("Shooter/Is At RPM", isAtRPM());
     }
     
     // ── RPM Control ───────────────────────────────────────────────────────────
@@ -139,7 +140,10 @@ public class ShooterSubsystem extends Shooter {
     }*/
     //TODOÇ fix goalRPM
     public void rpmControl() {
-        double motorRPM = ShooterConstants.IDLE_RPM * ShooterConstants.flywheelGearRatio;
+        double motorRPM = goalRPM * ShooterConstants.flywheelGearRatio;
+        if (true) {
+            motorRPM = SmartDashboard.getNumber("Shooter/CustomRPM", ShooterConstants.SHOOT_RPM);
+        }
 
         // Motor 1
         if (SmartDashboard.getBoolean("Shooter/Shooter1Running", false)) {
@@ -249,7 +253,15 @@ public class ShooterSubsystem extends Shooter {
     public Command stop() {
         return new InstantCommand(() -> {setGoalRPM(0);});
     }
-
+    public Command custom() {
+        return new InstantCommand(() -> {customRPM = true;});
+    }
+    public void customMethod() {
+        customRPM = true;
+    }
+    public Command customRelease() {
+        return new InstantCommand(() -> {customRPM = false;});
+    }
     public void startShootMethod() {
         setGoalRPM(ShooterConstants.SHOOT_RPM);
         //setGoalRPM(shooterCalc.calculateFlywheelShootRPMFromCurrentPose()));

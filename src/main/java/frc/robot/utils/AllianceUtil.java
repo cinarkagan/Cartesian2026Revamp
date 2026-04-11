@@ -12,27 +12,15 @@ public final class AllianceUtil {
   private AllianceUtil() {}
 
   /** Refresh cached alliance from Driver Station; call at startup/mode init, not every loop. */
-  public static void refreshAllianceFromDriverStation() {
-    if(Robot.isReal()) {
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      lastKnownBlueAlliance = false;
-    } else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      lastKnownBlueAlliance = true;
-    }
-    }
-    else
-    {
-      DriverStation.getAlliance()
-        .ifPresent(
-            alliance -> {
-              if (alliance == DriverStation.Alliance.Red) {
-                lastKnownBlueAlliance = false;
-              } else if (alliance == DriverStation.Alliance.Blue) {
-                lastKnownBlueAlliance = true;
-              }
-            });
-    }
-    Container.isBlue = lastKnownBlueAlliance;
+public static void refreshAllianceFromDriverStation() {
+      DriverStation.getAlliance().ifPresent(alliance -> {
+          if (alliance == DriverStation.Alliance.Red) {
+              lastKnownBlueAlliance = false;
+          } else if (alliance == DriverStation.Alliance.Blue) {
+              lastKnownBlueAlliance = true;
+          }
+      });
+      Container.isBlue = lastKnownBlueAlliance;
   }
 
   public static boolean isBlueAlliance() {

@@ -41,6 +41,9 @@ public class FeederSubsystem extends Feeder {
         configFeeder2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
         configFeeder2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(FeederConstants.kP, FeederConstants.kI, FeederConstants.kD);
         feeder2.configure(configFeeder2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        SmartDashboard.putBoolean("Feeder/Feeder1", false);
+        SmartDashboard.putBoolean("Feeder/Feeder2", false);
     }
 
     @Override
@@ -52,9 +55,17 @@ public class FeederSubsystem extends Feeder {
     }
 
     public void rpmControl() {
-        double motorRPM = 0;//goalRPM * FeederConstants.feederGearRatio;
-        feeder1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-        feeder2.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+        double motorRPM = goalRPM * FeederConstants.feederGearRatio;
+        if (SmartDashboard.getBoolean("Feeder/Feeder1", false)) {
+            feeder1.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+        } else {
+            feeder1.set(0);
+        }            
+        if (SmartDashboard.getBoolean("Feeder/Feeder2", false)) {
+            feeder2.getClosedLoopController().setSetpoint(motorRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+        } else {
+            feeder2.set(0);
+        }    
     }
 
     @Override

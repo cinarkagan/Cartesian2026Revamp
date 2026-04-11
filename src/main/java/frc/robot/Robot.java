@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
         .withJoystickReplay();
 
     public Robot() {
-        AllianceUtil.refreshAllianceFromDriverStation();
+        //AllianceUtil.refreshAllianceFromDriverStation();
         matchTracker = new MatchTracker();
         m_robotContainer = new RobotContainer();
     }

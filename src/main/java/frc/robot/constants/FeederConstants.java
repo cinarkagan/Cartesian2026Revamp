@@ -10,14 +10,14 @@ public class FeederConstants {
     public static int feeder2_ID = 54;
     public static boolean feeder2_reversed = true;
 
-    public static double IDLE_RPM = 0;
+    public static double IDLE_RPM = 500;
     public static double FEED_RPM = 0;//1500;
     public static double REVERSE_RPM = 0;//-1000;
     public static double rpmTol = 50;
     
     public static double feederGearRatio = 1;
 
-    public static double kP = 0.011;
+    public static double kP = 0.016;
     public static double kI = 0;
     public static double kD = 0;
 

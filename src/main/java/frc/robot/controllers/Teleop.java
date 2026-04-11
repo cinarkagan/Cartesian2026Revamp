@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Telemetry;
+import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.TurnToAngle;
 import frc.robot.constants.TeleopConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
@@ -108,7 +109,13 @@ public class Teleop implements Controller {
                 drivetrain.setDefaultCommand(
                     drivetrain.teleopDriveCommand(joystick)
                 );
-            }
+                joystick.b().onTrue(intakeSubsystem.openIntake());
+                joystick.x().onTrue(intakeSubsystem.closeIntake().alongWith(intakeSubsystem.stop()));
+                joystick.rightBumper().onTrue(intakeSubsystem.startIntake());
+                joystick.leftBumper().onTrue(intakeSubsystem.stop());
+                //joystick.leftTrigger().whileTrue(new AutoShootCommand(shooterSubsystem, feederSubsystem));
+                joystick.leftTrigger().onTrue(intakeSubsystem.startReverse());
+             }
         }
      }
         //drivetrain.registerTelemetry(logger::telemeterize);
